@@ -629,8 +629,8 @@ static void relation(struct typevalue *r1)
       r1->d.i = n;
     }
     op = current_token;
+    r1->type = TYPE_INTEGER;
   }
-  r1->type = TYPE_INTEGER;
 }
 /*---------------------------------------------------------------------------*/
 static void expr(struct typevalue *r1)
@@ -659,8 +659,8 @@ static void expr(struct typevalue *r1)
         break;
     }
     op = current_token;
+    r1->type = TYPE_INTEGER;
   }
-  r1->type = TYPE_INTEGER;
 }
 /*---------------------------------------------------------------------------*/
 static value_t intexpr(void)
