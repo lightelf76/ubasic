@@ -114,7 +114,7 @@ void run(const char program[]) {
 
 void clear_display(void)
 {
-  write(1, "\012", 1);
+  putchar('\012');
 }
 
 int move_cursor(int x, int y)
