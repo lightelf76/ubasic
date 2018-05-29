@@ -4,7 +4,6 @@ CFLAGS=-Wall -pedantic -g3
 
 tests: tests.o ubasic.o tokenizer.o
 use-ubasic: use-ubasic.o ubasic.o tokenizer.o
-use-ubasic: use-ubasic.o ubasic.o tokenizer.o
 ubx: ubx.o ubasic.o tokenizer.o
 clean:
 	rm -f *.o tests use-ubasic ubx *~
