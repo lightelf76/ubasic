@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
     perror(argv[1]);
     exit(1);
   }
-  if (s.st_size > ~(size_t)0) {
+  if ((s.st_size|3) >= ~(size_t)0) {
     write(2, "File too large.", 15);
     newline();
     exit(1);
