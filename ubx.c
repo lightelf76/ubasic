@@ -217,12 +217,18 @@ void end_input(void)
 static char *buf;
 
 /* FIXME: maybe make error message output go through charout(...), and in
-   this way factor out the handling of '\n'  -- tkchia */
-#ifndef __ia16__
-# define WRITENL(fd, x)	write((fd), x "\n", sizeof(x "\n") - 1)
+   this way factor out the handling of '\n'.  One wrinkle is that
+   charout(...) normally outputs to stdout, not stderr.  -- tkchia */
+#ifdef __ia16__
+# define OS_NEWLINE "\r\n"
 #else
-# define WRITENL(fd, x)	write((fd), x "\r\n", sizeof(x "\r\n") - 1)
+# define OS_NEWLINE "\n"
 #endif
+
+static void newline(void)
+{
+  write(2, OS_NEWLINE, strlen(OS_NEWLINE));
+}
 
 int main(int argc, char *argv[])
 {
@@ -231,7 +237,8 @@ int main(int argc, char *argv[])
 
   if (argc != 2) {
     write(2, argv[0], strlen(argv[0]));
-    WRITENL(2, ": program");
+    write(2, ": program", 9);
+    newline();
     exit(1);
   }
 
@@ -243,13 +250,15 @@ int main(int argc, char *argv[])
     exit(1);
   }
   if (s.st_size > ~(size_t)0) {
-    WRITENL(2, "File too large.");
+    write(2, "File too large.", 15);
+    newline();
     exit(1);
   }
   /* Align to the next quad */
   buf = sbrk((s.st_size|3) + 1);
   if (buf == (char *)-1) {
-    WRITENL(2, "Out of memory.");
+    write(2, "Out of memory.", 14);
+    newline();
     exit(1);
   }
   l = read(fd, buf, s.st_size);
