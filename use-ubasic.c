@@ -39,7 +39,7 @@ static const char program[] =
 30 print i\n\
 40 next i\n\
 50 print \"end\"\n\
-60 end\n\
+60 stop\n\
 100 print \"subroutine\"\n\
 110 return\n";
 

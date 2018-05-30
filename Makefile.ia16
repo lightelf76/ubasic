@@ -1,0 +1,23 @@
+all: tests.exe use-ubasic.exe ubx.exe
+
+CC=ia16-elf-gcc  # this should be i16gcc if building on a DJGPP/MS-DOS host
+CFLAGS=-mrtd -mcmodel=small -Os -Wall -pedantic
+LDFLAGS=$(CFLAGS) -Wl,-Map=$(@:.exe=.map)
+
+tests.exe: tests.o ubasic.o tokenizer.o
+use-ubasic.exe: use-ubasic.o ubasic.o tokenizer.o
+ubx.exe: ubx.o ubasic.o tokenizer.o
+
+.SUFFIXES: .c .o .exe
+
+.o.exe:
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+clean:
+	rm -f *.o *.exe *.map *~
+
+ubx.c: ubasic.h
+tests.c: ubasic.h
+use-ubasic.c: ubasic.h
+ubasic.c: ubasic.h tokenizer.h
+tokenizer.c: ubasic.h tokenizer.h

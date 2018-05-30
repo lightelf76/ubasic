@@ -1,4 +1,7 @@
+*.exe
+*.map
 *.o
+*~
 tests
 ubx
 use-ubasic

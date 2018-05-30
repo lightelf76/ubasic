@@ -5,6 +5,9 @@
  * Copyright (c) 2015, Alan Cox
  * All rights reserved.
  *
+ * Copyright (c) 2018, TK Chia
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -106,7 +109,7 @@ static int data_seek;
 
 static unsigned int array_base = 0;
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__ia16__)
 
 const char *_itoa(int v)
 {
@@ -809,12 +812,19 @@ static int chpos = 0;
 
 static void charout(char c, void *unused)
 {
+#ifdef __ia16__
+  static char cr = '\r';
+#endif
   if (c == '\t') {
     do {
       charout(' ', NULL);
     } while(chpos%8);
     return;
   }
+#ifdef __ia16__
+  if (c == '\n')
+    write(1, &cr, 1);
+#endif
   /* FIMXE: line buffer ! */
   write(1, &c, 1);
   if ((c == 8 || c== 127) && chpos)
@@ -1075,7 +1085,11 @@ static void randomize_statement(void)
     r = intexpr();
   if (r == 0) {
     time(&t);
+#ifndef __ia16__
     srand(getpid()^getuid()^(unsigned int)t);
+#else
+    srand((unsigned long)(void __far *)environ % 65521u ^ (unsigned int)t);
+#endif
   } else
     srand(r);
 }
