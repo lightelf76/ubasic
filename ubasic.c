@@ -100,9 +100,6 @@ static uint8_t statementgroup(void);
 static uint8_t statement(void);
 static void index_free(void);
 
-peek_func peek_function = NULL;
-poke_func poke_function = NULL;
-
 line_t line_num;
 static const char *data_position;
 static int data_seek;
@@ -141,13 +138,7 @@ void ubasic_init(const char *program)
   for (i = 0; i < MAX_STRING; i++)
     strings[i] = nullstr;
 }
-/*---------------------------------------------------------------------------*/
-void ubasic_init_peek_poke(const char *program, peek_func peek, poke_func poke)
-{
-  peek_function = peek;
-  poke_function = poke;
-  ubasic_init(program);
-}
+
 /*---------------------------------------------------------------------------*/
 void ubasic_error(const char *err)
 {

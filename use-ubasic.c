@@ -61,6 +61,14 @@ void end_input(void)
 {
 }
 
+value_t peek_function(value_t arg)
+{
+  return arg;
+}
+
+void poke_function(value_t arg, value_t value)
+{
+}
 
 /*---------------------------------------------------------------------------*/
 int
