@@ -842,7 +842,11 @@ static void charreset(void)
 
 static void chartab(value_t v)
 {
-  while(chpos < v)
+  if (v < 1)
+    v = 1;
+  if (chpos >= v)
+    charout('\n', NULL);
+  while(chpos < v - 1)
     charout(' ', NULL);
 }
 
