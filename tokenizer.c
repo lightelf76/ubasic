@@ -2,6 +2,9 @@
  * Copyright (c) 2006, Adam Dunkels
  * All rights reserved.
  *
+ * Copyright (c) 2018, TK Chia
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -84,6 +87,7 @@ static const struct keyword_token keywords[] = {
   {"code", TOKENIZER_CODE},
   {"val", TOKENIZER_VAL},
   {"stop", TOKENIZER_STOP},
+  {"end", TOKENIZER_END},
   {"and", TOKENIZER_AND},
   {"or", TOKENIZER_OR},
   {"dim", TOKENIZER_DIM},
@@ -117,6 +121,10 @@ static uint8_t doublechar(void)
     return TOKENIZER_NE;
   if (*ptr == '*' && ptr[1] == '*')
     return TOKENIZER_POWER;
+  if (*ptr == '\r' && ptr[1] == '\n')
+    return TOKENIZER_NL;
+  if (*ptr == '\n' && ptr[1] == '\r')
+    return TOKENIZER_NL;
   return 0;
 }
 
@@ -125,6 +133,8 @@ static uint8_t singlechar(void)
 {
   if (strchr("\n,;+-&|*/(#)<>=^:?", *ptr))
     return *ptr;
+  if (*ptr == '\r')
+    return TOKENIZER_NL;
   /* Not semantically meaningful */
   return 0;
 }
@@ -172,7 +182,7 @@ static uint8_t get_next_token(void)
     nextptr = ptr;
     do {
       ++nextptr;
-      if (!*nextptr || *nextptr == '\n')
+      if (!*nextptr || *nextptr == '\n' || *nextptr == '\r')
         ubasic_tokenizer_error();
     } while(*nextptr != '"');
     ++nextptr;
@@ -250,7 +260,7 @@ void tokenizer_next(void)
 
 void tokenizer_newline(void)
 {
-   while(!(*nextptr == '\n' || tokenizer_finished())) {
+   while(!(*nextptr == '\n' || *nextptr == '\r' || tokenizer_finished())) {
      ++nextptr;
   }
   tokenizer_next();

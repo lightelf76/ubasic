@@ -5,6 +5,9 @@
  * Copyright (c) 2015, Alan Cox
  * All rights reserved.
  *
+ * Copyright (c) 2018, TK Chia
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -82,6 +85,7 @@
 #define TOKENIZER_RIGHTSTR	((uint8_t)227)
 #define TOKENIZER_MIDSTR	((uint8_t)228)
 #define TOKENIZER_CHRSTR	((uint8_t)229)
+#define TOKENIZER_END		((uint8_t)230)
   /* Tokens that are single symbol assigned to themselves for efficiency */
 #define TOKENIZER_COMMA		((uint8_t)',')
 #define TOKENIZER_SEMICOLON	((uint8_t)';')
@@ -100,7 +104,7 @@
 #define TOKENIZER_POWER		((uint8_t)'^')
 #define TOKENIZER_COLON		((uint8_t)':')
 #define TOKENIZER_QUESTION 	((uint8_t)'?')
-#define TOKENIZER_CR		((uint8_t)'\n')
+#define TOKENIZER_NL		((uint8_t)'\n')
 
 
 #define TOKENIZER_NUMEXP(x)		(((x) & 0xE0) == 0xC0)

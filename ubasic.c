@@ -200,7 +200,7 @@ static int statement_end(void)
 {
   uint8_t t = current_token;
   /* FIXME?? END OF FILE */
-  if (t == TOKENIZER_CR || t == TOKENIZER_COLON)
+  if (t == TOKENIZER_NL || t == TOKENIZER_COLON)
     return 1;
   return 0;
 }
@@ -745,9 +745,9 @@ jump_linenum_slow(int linenum)
     do {
       do {
         tokenizer_next();
-      } while(current_token != TOKENIZER_CR &&
+      } while(current_token != TOKENIZER_NL &&
           current_token != TOKENIZER_ENDOFINPUT);
-      if(current_token == TOKENIZER_CR) {
+      if(current_token == TOKENIZER_NL) {
         tokenizer_next();
       }
     } while(current_token != TOKENIZER_NUMBER);
@@ -833,7 +833,11 @@ static void charreset(void)
 
 static void chartab(value_t v)
 {
-  while(chpos < v)
+  if (v < 1)
+    v = 1;
+  if (chpos >= v)
+    charout('\n', NULL);
+  while(chpos < v - 1)
     charout(' ', NULL);
 }
 
@@ -912,19 +916,31 @@ static void print_statement(void)
 }
 
 /*---------------------------------------------------------------------------*/
-static void if_statement(void)
+static int if_statement(void)
 {
   struct typevalue r;
 
   expr(&r);
   DEBUG_PRINTF("if_statement: relation %d\n", r.d.i);
-  /* FIXME allow THEN number */
   accept_tok(TOKENIZER_THEN);
   if(r.d.i) {
-    statementgroup();
+    if (current_token != TOKENIZER_NUMBER) {
+      statementgroup();
+    } else {
+      /* THEN number:  Allow an arbitrary expression as a line number to
+         GO TO.  Well, almost arbitrary --- require the expression to start
+         with a numeric token, otherwise the grammar becomes ambiguous.
+           -- tkchia 20180616  */
+      int linenum = intexpr();
+      if (!statement_end())
+        syntax_error();
+      jump_linenum(linenum);
+      return 0;
+    }
   } else {
     tokenizer_newline();
   }
+  return 1;
 }
 /*---------------------------------------------------------------------------*/
 static void let_statement(void)
@@ -1062,7 +1078,7 @@ static void data_statement(void)
       accept_tok(t);
     else if (!statement_end())
       syntax_error();
-  } while(t != TOKENIZER_CR);
+  } while(t != TOKENIZER_NL);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -1072,7 +1088,7 @@ static void randomize_statement(void)
   time_t t;
   /* FIXME: replace all the CR checks with TOKENIZER_EOS() or similar so we
      can deal with ':' */
-  if (current_token != TOKENIZER_CR)
+  if (current_token != TOKENIZER_NL)
     r = intexpr();
   if (r == 0) {
     time(&t);
@@ -1240,8 +1256,7 @@ static uint8_t statement(void)
     print_statement();
     break;
   case TOKENIZER_IF:
-    if_statement();
-    break;
+    return if_statement();
   case TOKENIZER_GO:
     go_statement();
     return 0;
@@ -1258,6 +1273,7 @@ static uint8_t statement(void)
     next_statement();
     break;
   case TOKENIZER_STOP:
+  case TOKENIZER_END:
     stop_statement();
     break;
   case TOKENIZER_REM:
@@ -1314,7 +1330,7 @@ static uint8_t statementgroup(void)
 static void statements(void)
 {
   if (statementgroup())
-    accept_tok(TOKENIZER_CR);
+    accept_tok(TOKENIZER_NL);
 }
 
 /*---------------------------------------------------------------------------*/
