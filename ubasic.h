@@ -2,6 +2,9 @@
  * Copyright (c) 2006, Adam Dunkels
  * All rights reserved.
  *
+ * Copyright (c) 2018, TK Chia
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,9 +37,6 @@ typedef uint16_t	line_t;
 typedef int16_t		value_t;
 typedef uint16_t	var_t;
 
-typedef value_t (*peek_func)(value_t);
-typedef void (*poke_func)(value_t, value_t);
-
 enum type {
   TYPE_INTEGER = 'I',
   TYPE_STRING = 'S'
@@ -52,7 +52,6 @@ struct typevalue {
 
 
 void ubasic_init(const char *program);
-void ubasic_init_peek_poke(const char *program, peek_func peek, poke_func poke);
 void ubasic_run(void);
 void ubasic_tokenizer_error(void);
 int ubasic_finished(void);
@@ -67,5 +66,7 @@ void clear_display(void);
 int move_cursor(int x, int y);
 void begin_input(void);
 void end_input(void);
+value_t peek_function(value_t);
+void poke_function(value_t, value_t);
 
 #endif /* __UBASIC_H__ */

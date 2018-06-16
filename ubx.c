@@ -50,18 +50,18 @@
 #include "ubasic.h"
 
 /*---------------------------------------------------------------------------*/
-value_t peek(value_t arg) {
+value_t peek_function(value_t arg) {
     return arg;
 }
 
 /*---------------------------------------------------------------------------*/
-void poke(value_t arg, value_t value) {
+void poke_function(value_t arg, value_t value) {
     assert(arg == value);
 }
 
 /*---------------------------------------------------------------------------*/
 void run(const char program[]) {
-  ubasic_init_peek_poke(program, &peek, &poke);
+  ubasic_init(program);
 
   do {
     ubasic_run();
