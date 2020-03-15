@@ -1,7 +1,7 @@
 all: tests.exe use-ubasic.exe ubx.exe
 
 CC=ia16-elf-gcc  # this should be i16gcc if building on a DJGPP/MS-DOS host
-CFLAGS=-mrtd -mcmodel=small -Os -Wall -pedantic
+CFLAGS=-mregparmcall -mcmodel=small -Os -Wall -pedantic
 LDFLAGS=$(CFLAGS) -Wl,-Map=$(@:.exe=.map)
 
 tests.exe: tests.o ubasic.o tokenizer.o
