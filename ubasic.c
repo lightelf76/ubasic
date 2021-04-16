@@ -106,16 +106,16 @@ static int data_seek;
 
 static unsigned int array_base = 0;
 
-#if defined(__linux__) || defined(__ia16__)
+#if defined(__linux__) || defined(__ia16__) || defined(__WATCOMC__)
 
-const char *_itoa(int v)
+const char *__itoa(int v)
 {
   static char buf[16];
   snprintf(buf, 16, "%d", v);
   return buf;
 }
 
-const char *_uitoa(int v)
+const char *__uitoa(int v)
 {
   static char buf[16];
   snprintf(buf, 16, "%u", v);
@@ -145,7 +145,7 @@ void ubasic_error(const char *err)
   const char *p;
   write(2, "\n", 1);
   if (line_num) {
-    p = _uitoa(line_num);
+    p = __uitoa(line_num);
     write(2, p, strlen(p));
     write(2, ": ", 2);
   }
@@ -850,7 +850,7 @@ static void charoutstr(uint8_t *p)
 
 static void intout(value_t v)
 {
-  const char *p = _itoa(v);
+  const char *p = __itoa(v);
   while(*p)
     charout(*p++, NULL);
 }
@@ -1092,10 +1092,10 @@ static void randomize_statement(void)
     r = intexpr();
   if (r == 0) {
     time(&t);
-#ifndef __ia16__
-    srand(getpid()^getuid()^(unsigned int)t);
-#else
+#if defined(__ia16__) || defined(__WATCOMC__)
     srand((unsigned long)(void __far *)environ % 65521u ^ (unsigned int)t);
+#else
+    srand(getpid()^getuid()^(unsigned int)t);
 #endif
   } else
     srand(r);
@@ -1397,6 +1397,7 @@ void *ubasic_find_variable(int varnum, struct typevalue *value,
   } else
     ubasic_error("badv");
   exit(1);	/* To shut up gcc */
+  return NULL; /* To shut up wcc */
 }
 
 void ubasic_get_variable(int varnum, struct typevalue *value,
